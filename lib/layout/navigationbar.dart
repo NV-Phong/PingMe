@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pingme/screens/blank_screen.dart';
 import 'package:pingme/screens/env_screen.dart';
+import 'package:pingme/screens/test_api_screen.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
@@ -15,7 +16,8 @@ class _NavigationState extends State<Navigation> {
   final List<Widget> pages = [
     const BlankScreen(),
     const EnviromentVariable(),
-    const Center(child: Text('Messages Page')),
+    const TestAPIScreen(),
+    // const Center(child: Text('Messages Page')),
   ];
 
   @override
