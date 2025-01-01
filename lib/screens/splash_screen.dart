@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/auth/login');
+                Navigator.pushNamed(context, '/auth/register');
               },
               child: const Text('Get Started'),
             ),
