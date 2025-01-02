@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pingme/layout/layout.dart';
+import 'package:pingme/screens/beta/home_screen.dart';
 import 'package:pingme/screens/beta/login_screen.dart';
 import 'package:pingme/screens/beta/register_screen.dart';
 import 'package:pingme/screens/env_screen.dart';
@@ -11,6 +12,7 @@ class HomeRoutes {
     '/': (context) => const SplashScreen(),
     '/auth/login': (context) => const LoginScreen(),
     '/auth/register': (context) => const RegisterScreen(),
+    '/home': (context) => const Layout(body: HomeScreen()),
     '/testAPI': (context) => const Layout(body: TestAPIScreen()),
     '/enviroment-variable': (context) =>
         const Layout(body: EnviromentVariable()),

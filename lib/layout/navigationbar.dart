@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pingme/screens/blank_screen.dart';
+import 'package:pingme/screens/beta/home_screen.dart';
 import 'package:pingme/screens/env_screen.dart';
 import 'package:pingme/screens/test_api_screen.dart';
 
@@ -14,10 +14,9 @@ class _NavigationState extends State<Navigation> {
   int currentPageIndex = 0;
 
   final List<Widget> pages = [
-    const BlankScreen(),
+    const HomeScreen(),
     const EnviromentVariable(),
     const TestAPIScreen(),
-    // const Center(child: Text('Messages Page')),
   ];
 
   @override
