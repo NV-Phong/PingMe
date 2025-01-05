@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -8,6 +9,26 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkToken();
+  }
+
+  // Kiểm tra sự tồn tại của token và chuyển hướng
+  Future<void> _checkToken() async {
+    String? accessToken = await _secureStorage.read(key: 'access_token');
+    if (accessToken != null) {
+      // Nếu có access token, chuyển hướng đến trang home
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      // Nếu không có token, chuyển hướng đến trang login
+      Navigator.pushReplacementNamed(context, '/auth/login');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
