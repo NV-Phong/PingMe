@@ -47,7 +47,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        // title: const Text('Profile'),
         centerTitle: true,
         backgroundColor:
             Colors.purple, // Adjust background color to match Instagram

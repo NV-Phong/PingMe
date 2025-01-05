@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pingme/screens/beta/home_screen.dart';
 import 'package:pingme/screens/beta/profile_screen.dart';
+import 'package:pingme/screens/beta/search_screen.dart';
 import 'package:pingme/screens/beta/settings_screen.dart';
 
 class Navigation extends StatefulWidget {
@@ -15,6 +16,7 @@ class _NavigationState extends State<Navigation> {
 
   final List<Widget> pages = [
     const HomeScreen(),
+    const SearchScreen(),
     const ProfileScreen(),
     const SettingsScreen(),
   ];
@@ -38,6 +40,11 @@ class _NavigationState extends State<Navigation> {
             icon: Icon(Icons.chat_bubble_outline), // Icon cho Chat
             selectedIcon: Icon(Icons.chat_bubble), // Icon khi được chọn
             label: 'Chat',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.search_outlined), // Icon cho Chat
+            selectedIcon: Icon(Icons.search_rounded), // Icon khi được chọn
+            label: 'Search',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline), // Icon cho Profile
