@@ -5,11 +5,12 @@ import 'token_storage.dart';
 class InterceptorAPI {
   late Dio _dio;
   final TokenStorage _tokenStorage = TokenStorage();
+  final Dio _refreshDio = Dio(); // Tạo một Dio instance riêng cho refresh token
 
   InterceptorAPI() {
     _dio = Dio(
       BaseOptions(
-        baseUrl: EnvConfig.serverURL,
+        baseUrl: EnvConfig.serverURL, // Cấu hình base URL
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
       ),
@@ -33,15 +34,21 @@ class InterceptorAPI {
         onError: (DioException error, handler) async {
           // Xử lý lỗi, ví dụ: refresh token khi gặp lỗi 401
           if (error.response?.statusCode == 401) {
+            print('Lỗi 401: Unauthorized - Token có thể đã hết hạn.');
+
             // Lấy refresh token từ TokenStorage
             String? refreshToken = await _tokenStorage.getRefreshToken();
 
             if (refreshToken != null) {
               try {
-                // Gửi request làm mới token
-                final refreshResponse = await _dio.post(
-                  '/auth/refresh', // Endpoint để refresh token
-                  data: {'refresh_token': refreshToken},
+                // Gửi request làm mới token bằng _refreshDio
+                final refreshResponse = await _refreshDio.post(
+                  '${EnvConfig.serverURL}/auth/refresh-token',
+                  options: Options(
+                    headers: {
+                      'Authorization': 'Bearer $refreshToken',
+                    },
+                  ),
                 );
 
                 // Lưu token mới
@@ -63,11 +70,13 @@ class InterceptorAPI {
 
                 return handler.resolve(retryResponse);
               } catch (refreshError) {
-                // Xử lý khi refresh token thất bại
+                print(
+                    'Lỗi khi refresh token: ${refreshError.toString()}'); // Log lỗi refresh token
                 return handler.next(refreshError as DioException);
               }
             }
           }
+          print('Lỗi khác: ${error.response?.statusCode} - ${error.message}');
           return handler.next(error);
         },
       ),

@@ -1,4 +1,3 @@
-import 'package:pingme/config/env_config.dart';
 import 'package:pingme/config/interceptor_api.dart';
 
 class ApiService {
@@ -8,7 +7,7 @@ class ApiService {
 
   Future<String> getHello() async {
     try {
-      final response = await _interceptorAPI.dio.get('${EnvConfig.serverURL}/');
+      final response = await _interceptorAPI.dio.get('/');
 
       if (response.statusCode == 200) {
         return response.data;

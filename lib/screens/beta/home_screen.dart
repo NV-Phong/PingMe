@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pingme/config/token_storage.dart';
+import 'package:pingme/services/search_user_api.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -9,25 +9,28 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String accessToken = '';
-  String refreshToken = '';
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, String>> _searchResults = [];
 
-  @override
-  void initState() {
-    super.initState();
-    _loadTokens();
-  }
+  // Tạo instance của UserService
+  final SearchUserAPI _userService = SearchUserAPI();
 
-  // Hàm lấy và hiển thị token
-  Future<void> _loadTokens() async {
-    final tokenStorage = TokenStorage();
-    final loadedAccessToken = await tokenStorage.getAccessToken();
-    final loadedRefreshToken = await tokenStorage.getRefreshToken();
-
-    setState(() {
-      accessToken = loadedAccessToken ?? 'No Access Token Found';
-      refreshToken = loadedRefreshToken ?? 'No Refresh Token Found';
-    });
+  // Phương thức tìm kiếm người dùng
+  void _searchUsers() async {
+    String keyword = _searchController.text.trim();
+    if (keyword.isNotEmpty) {
+      try {
+        // Gọi phương thức tìm kiếm và cập nhật kết quả
+        List<Map<String, String>> users =
+            await _userService.searchUsersByKeyword(keyword);
+        setState(() {
+          _searchResults = users;
+        });
+      } catch (e) {
+        // Xử lý lỗi nếu có
+        print('Error: $e');
+      }
+    }
   }
 
   @override
@@ -39,11 +42,36 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Access Token: $accessToken'),
-            const SizedBox(height: 10),
-            Text('Refresh Token: $refreshToken'),
+            // TextField để người dùng nhập từ khóa tìm kiếm
+            TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: 'Search by username, email, or display name',
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed:
+                      _searchUsers, // Gọi hàm tìm kiếm khi nhấn vào nút tìm kiếm
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Hiển thị kết quả tìm kiếm
+            _searchResults.isEmpty
+                ? const Text('No results found.')
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: _searchResults.length,
+                      itemBuilder: (context, index) {
+                        final user = _searchResults[index];
+                        return ListTile(
+                          title: Text(user['displayName'] ?? 'No Name'),
+                          subtitle: Text(user['email'] ?? 'No Email'),
+                          trailing: Text(user['username'] ?? 'No Username'),
+                        );
+                      },
+                    ),
+                  ),
           ],
         ),
       ),
