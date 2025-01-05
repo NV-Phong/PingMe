@@ -25,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
       Navigator.pushReplacementNamed(context, '/home');
     } else {
       // Nếu không có token, chuyển hướng đến trang login
-      Navigator.pushReplacementNamed(context, '/auth/login');
+      // Navigator.pushReplacementNamed(context, '/auth/login');
     }
   }
 

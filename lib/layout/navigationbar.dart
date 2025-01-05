@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pingme/screens/beta/home_screen.dart';
 import 'package:pingme/screens/beta/profile_screen.dart';
-import 'package:pingme/screens/test_api_screen.dart';
+import 'package:pingme/screens/beta/settings_screen.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
@@ -16,7 +16,7 @@ class _NavigationState extends State<Navigation> {
   final List<Widget> pages = [
     const HomeScreen(),
     const ProfileScreen(),
-    const TestAPIScreen(),
+    const SettingsScreen(),
   ];
 
   @override
