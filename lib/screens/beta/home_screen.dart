@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pingme/services/dto/user_info_dto.dart';
 import 'package:pingme/services/search_user_api.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -10,9 +11,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<Map<String, String>> _searchResults = [];
+  List<UserInfoDTO> _searchResults = []; // Sử dụng danh sách UserInfoDTO
 
-  // Tạo instance của UserService
+  // Tạo instance của SearchUserAPI
   final SearchUserAPI _userService = SearchUserAPI();
 
   // Phương thức tìm kiếm người dùng
@@ -21,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (keyword.isNotEmpty) {
       try {
         // Gọi phương thức tìm kiếm và cập nhật kết quả
-        List<Map<String, String>> users =
+        List<UserInfoDTO> users =
             await _userService.searchUsersByKeyword(keyword);
         setState(() {
           _searchResults = users;
@@ -65,9 +66,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       itemBuilder: (context, index) {
                         final user = _searchResults[index];
                         return ListTile(
-                          title: Text(user['displayName'] ?? 'No Name'),
-                          subtitle: Text(user['email'] ?? 'No Email'),
-                          trailing: Text(user['username'] ?? 'No Username'),
+                          title: Text(user.displayName),
+                          subtitle: Text(user.email),
+                          trailing: Text(user.username),
                         );
                       },
                     ),
