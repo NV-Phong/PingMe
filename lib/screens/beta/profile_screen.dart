@@ -112,9 +112,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 children: [
                                   Text('Email: ${_user!.email}',
                                       style: const TextStyle(fontSize: 16)),
-                                  const SizedBox(height: 8),
-                                  Text('ID: ${_user!.id}',
-                                      style: const TextStyle(fontSize: 16)),
+                                  // const SizedBox(height: 8),
+                                  // Text('ID: ${_user!.id}',
+                                  //     style: const TextStyle(fontSize: 16)),
                                 ],
                               ),
                             ),

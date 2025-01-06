@@ -2,6 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class EnvConfig {
   static late final String serverURL;
+  static late final String socketServerURL;
 
   static Future<void> init() async {
     try {
@@ -11,5 +12,6 @@ class EnvConfig {
     }
 
     serverURL = dotenv.env['SERVER'] ?? 'Không tìm thấy server!';
+    socketServerURL = dotenv.env['SOCKET_SERVER'] ?? 'Không tìm thấy server!';
   }
 }
