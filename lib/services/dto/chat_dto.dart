@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 class ChatDTO {
+  String? id; // Thêm trường id
   String? chatName;
   String? avatar;
   ChatType chatType;
@@ -8,6 +9,7 @@ class ChatDTO {
   List<GroupChatMember>? groupChat;
 
   ChatDTO({
+    this.id, // Khởi tạo id
     this.chatName,
     this.avatar,
     this.chatType = ChatType.PERSONAL,
@@ -17,6 +19,7 @@ class ChatDTO {
 
   factory ChatDTO.fromJson(Map<String, dynamic> json) {
     return ChatDTO(
+      id: json['_id'], // Gán id từ JSON
       chatName: json['ChatName'],
       avatar: json['Avatar'],
       chatType: ChatType.values.firstWhere(
@@ -31,6 +34,7 @@ class ChatDTO {
 
   Map<String, dynamic> toJson() {
     return {
+      '_id': id, // Thêm id vào JSON
       'ChatName': chatName,
       'Avatar': avatar,
       'ChatType': chatType.toString().split('.').last,

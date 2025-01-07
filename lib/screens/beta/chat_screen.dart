@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:pingme/services/create_or_find_chat.dart';
+import 'package:pingme/services/dto/chat_dto.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
   final String userId;
   final String displayName;
+  final ChatDTO chat; // Thêm trường chat để lưu List<ChatDTO>
 
   const ChatScreen({
     super.key,
     required this.userId,
     required this.displayName,
+    required this.chat,
   });
 
   @override
@@ -25,6 +29,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String? clientId;
   bool isLoading = false;
   String errorMessage = '';
+  final CreateOrFindChat chatService = CreateOrFindChat();
 
   @override
   void initState() {
@@ -35,7 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void initSocket() {
-    socket = IO.io('http://192.168.22.210:3000', <String, dynamic>{
+    socket = IO.io('http://192.168.1.11:3000', <String, dynamic>{
       'transports': ['websocket'],
     });
 
@@ -97,8 +102,10 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  void joinRoom() {
-    String room = roomController.text.trim();
+  Future<void> joinRoom() async {
+    // var chat = await chatService.createOrFindChat(widget.userId);
+    String room = widget.chat.id.toString();
+    print("mã của chat: " + room);
     if (room.isNotEmpty) {
       socket.emit('join-room', {'room': room});
       loadChatHistory();
@@ -107,7 +114,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void sendMessage() {
     String text = messageController.text.trim();
-    String room = roomController.text.trim();
+
+    String room = widget.chat.id.toString();
 
     if (text.isNotEmpty && room.isNotEmpty) {
       socket.emit('send-message', {

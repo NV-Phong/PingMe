@@ -4,25 +4,27 @@ import 'package:pingme/services/dto/chat_dto.dart';
 class CreateOrFindChat {
   final InterceptorAPI _interceptorAPI = InterceptorAPI();
 
-  Future<List<ChatDTO>> createOrFindChat(String IDRecived) async {
+  Future<ChatDTO> createOrFindChat(String idReceived) async {
     try {
       final response =
-          await _interceptorAPI.dio.post('/chat/personal/$IDRecived');
+          await _interceptorAPI.dio.post('/chat/personal/$idReceived');
 
-      if (response.statusCode == 200) {
-        List<dynamic> chat = response.data;
-        if (chat.isEmpty) {
-          return []; // Không tìm thấy hoặc không tạo được đoạn chat
+      if (response.statusCode == 201) {
+        final chatData = response.data;
+
+        if (chatData == null || chatData.isEmpty) {
+          throw Exception('No chat found or created');
         }
 
-        // Sử dụng UserInfoDTO để chuyển đổi dữ liệu trả về
-        return chat.map((chat) => ChatDTO.fromJson(chat)).toList();
+        // Chuyển đổi JSON thành đối tượng ChatDTO
+        return ChatDTO.fromJson(chatData);
       } else {
-        throw Exception('Error fetching users');
+        throw Exception(
+            'Failed to fetch or create chat. Status code: ${response.statusCode}');
       }
     } catch (e) {
       print('Error: $e');
-      throw Exception('Failed to search users');
+      throw Exception('Failed to fetch or create chat');
     }
   }
 }

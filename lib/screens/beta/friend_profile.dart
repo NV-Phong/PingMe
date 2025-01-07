@@ -9,6 +9,59 @@ class FriendProfile extends StatelessWidget {
 
   FriendProfile({super.key, required this.user});
 
+  Future<void> handleChatCreation(BuildContext context) async {
+    try {
+      // Hiển thị loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      // Gọi API tạo hoặc tìm đoạn chat
+      final chat = await chatService.createOrFindChat(user.id);
+      print(chat);
+      // Đóng loading indicator
+      Navigator.pop(context);
+
+      // Kiểm tra nếu chat null
+      if (chat == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Không tìm thấy hoặc tạo được đoạn chat'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+
+      // Chuyển sang màn hình ChatScreen
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChatScreen(
+            userId: user.id,
+            displayName: user.displayName,
+            chat: chat,
+          ),
+        ),
+      );
+    } catch (e) {
+      // Đóng loading indicator nếu lỗi xảy ra
+      Navigator.pop(context);
+
+      // Hiển thị thông báo lỗi
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Lỗi khi tải đoạn chat: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,17 +158,7 @@ class FriendProfile extends StatelessWidget {
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () {
-                chatService.createOrFindChat(user.id);
-                // Navigate to ChatScreen with user.id and user.displayName
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChatScreen(
-                      userId: user.id, // Pass user.id
-                      displayName: user.displayName, // Pass displayName
-                    ),
-                  ),
-                );
+                handleChatCreation(context);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.grey,
