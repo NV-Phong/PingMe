@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pingme/screens/beta/chat_screen.dart';
+import 'package:pingme/services/create_or_find_chat.dart';
 import 'package:pingme/services/dto/user_info_dto.dart';
 
 class FriendProfile extends StatelessWidget {
   final UserInfoDTO user;
+  final CreateOrFindChat chatService = CreateOrFindChat();
 
-  const FriendProfile({super.key, required this.user});
+  FriendProfile({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +105,7 @@ class FriendProfile extends StatelessWidget {
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () {
+                chatService.createOrFindChat(user.id);
                 // Navigate to ChatScreen with user.id and user.displayName
                 Navigator.push(
                   context,
