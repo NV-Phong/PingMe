@@ -5,62 +5,8 @@ import 'package:pingme/services/dto/user_info_dto.dart';
 
 class FriendProfile extends StatelessWidget {
   final UserInfoDTO user;
-  final CreateOrFindChat chatService = CreateOrFindChat();
 
-  FriendProfile({super.key, required this.user});
-
-  Future<void> handleChatCreation(BuildContext context) async {
-    try {
-      // Hiển thị loading indicator
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) => const Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-
-      // Gọi API tạo hoặc tìm đoạn chat
-      final chat = await chatService.createOrFindChat(user.id);
-      print(chat);
-      // Đóng loading indicator
-      Navigator.pop(context);
-
-      // Kiểm tra nếu chat null
-      if (chat == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Không tìm thấy hoặc tạo được đoạn chat'),
-            backgroundColor: Colors.orange,
-          ),
-        );
-        return;
-      }
-
-      // Chuyển sang màn hình ChatScreen
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ChatScreen(
-            userId: user.id,
-            displayName: user.displayName,
-            chat: chat,
-          ),
-        ),
-      );
-    } catch (e) {
-      // Đóng loading indicator nếu lỗi xảy ra
-      Navigator.pop(context);
-
-      // Hiển thị thông báo lỗi
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Lỗi khi tải đoạn chat: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
+  const FriendProfile({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -157,8 +103,30 @@ class FriendProfile extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             ElevatedButton(
-              onPressed: () {
-                handleChatCreation(context);
+              onPressed: () async {
+                try {
+                  // Gọi API để tạo hoặc lấy đối tượng chat
+                  final chatService = CreateOrFindChat();
+                  final chat = await chatService.createOrFindChat(user.id);
+
+                  // Điều hướng tới ChatScreen với dữ liệu chat
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatScreen(
+                        userId: user.id,
+                        displayName: user.displayName,
+                        chat: chat, // Truyền đối tượng chat vào ChatScreen
+                      ),
+                    ),
+                  );
+                } catch (e) {
+                  // Hiển thị thông báo lỗi nếu API thất bại
+                  print('Error: $e');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to start chat: $e')),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.grey,

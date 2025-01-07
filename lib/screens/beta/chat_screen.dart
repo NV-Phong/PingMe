@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pingme/config/token_storage.dart';
 import 'package:pingme/services/create_or_find_chat.dart';
 import 'package:pingme/services/dto/chat_dto.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -7,7 +8,7 @@ import 'package:intl/intl.dart';
 class ChatScreen extends StatefulWidget {
   final String userId;
   final String displayName;
-  final ChatDTO chat; // Thêm trường chat để lưu List<ChatDTO>
+  final ChatDTO chat;
 
   const ChatScreen({
     super.key,
@@ -30,17 +31,27 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isLoading = false;
   String errorMessage = '';
   final CreateOrFindChat chatService = CreateOrFindChat();
+  String? userId;
 
   @override
   void initState() {
+    _loadUserId();
     super.initState();
     roomController = TextEditingController(text: widget.userId);
     initSocket();
     joinRoom();
   }
 
+  Future<void> _loadUserId() async {
+    TokenStorage tokenStorage = TokenStorage();
+    String? id = await tokenStorage.getUserIdFromAccessToken();
+    setState(() {
+      userId = id;
+    });
+  }
+
   void initSocket() {
-    socket = IO.io('http://192.168.1.11:3000', <String, dynamic>{
+    socket = IO.io('http://192.168.110.225:3000', <String, dynamic>{
       'transports': ['websocket'],
     });
 
@@ -50,21 +61,21 @@ class _ChatScreenState extends State<ChatScreen> {
       print('Your client ID: $clientId');
     });
 
-    socket.on('receive-message', (data) {
-      if (mounted) {
-        setState(() {
-          if (data != null && data is Map<String, dynamic>) {
-            chatHistory.add({
-              'senderId': data['senderId'] ?? '',
-              'IDReceiver': data['IDReceiver'] ?? '',
-              'message': data['content'] ?? '',
-              'createdAt': data['createdAt'] ?? 'Unknown',
-            });
-            scrollToBottom();
-          }
-        });
-      }
-    });
+    // socket.on('receive-message', (data) {
+    //   if (mounted) {
+    //     setState(() {
+    //       if (data != null && data is Map<String, dynamic>) {
+    //         chatHistory.add({
+    //           'senderId': data['senderId'] ?? '',
+    //           'IDReceiver': data['IDReceiver'] ?? '',
+    //           'message': data['content'] ?? '',
+    //           'createdAt': data['createdAt'] ?? 'Unknown',
+    //         });
+    //         scrollToBottom();
+    //       }
+    //     });
+    //   }
+    // });
 
     socket.on('chat-history', (data) {
       if (mounted) {
@@ -83,8 +94,8 @@ class _ChatScreenState extends State<ChatScreen> {
                           DateTime.parse(message['CreateAt'].toString()))
                       : 'Unknown',
                   'isCurrentUser': isCurrentUser
-                      ? 'true'
-                      : 'false', // Đánh dấu tin nhắn của người nhận
+                      ? 'false'
+                      : 'true', // Đánh dấu tin nhắn của người nhận
                 };
               } else {
                 return {'message': '', 'senderId': '', 'createdAt': 'Unknown'};
@@ -120,14 +131,14 @@ class _ChatScreenState extends State<ChatScreen> {
     if (text.isNotEmpty && room.isNotEmpty) {
       socket.emit('send-message', {
         'room': room,
-        'senderId': clientId,
+        'senderId': userId,
         'content': text,
         'chatType': 'GROUP',
         'IDReceiver': widget.userId,
       });
       setState(() {
         chatHistory.add({
-          'senderId': clientId!,
+          'senderId': userId!,
           'IDReceiver': widget.userId,
           'message': text,
           'createdAt': DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()),
@@ -139,7 +150,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void loadChatHistory() {
-    String room = roomController.text.trim();
+    // String room = roomController.text.trim();
+    String room = widget.chat.id.toString();
     if (room.isNotEmpty) {
       setState(() {
         isLoading = true;
@@ -197,7 +209,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildMessageBubble(
       String message, String timestamp, bool isCurrentUser) {
     return Align(
-      alignment: isCurrentUser ? Alignment.centerLeft : Alignment.centerRight,
+      alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
@@ -209,7 +221,7 @@ class _ChatScreenState extends State<ChatScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isCurrentUser ? 'Other' : 'You',
+              isCurrentUser ? 'You' : widget.displayName,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color:

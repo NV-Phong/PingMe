@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class TokenStorage {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
@@ -36,5 +37,16 @@ class TokenStorage {
   // Xóa tất cả các token
   Future<void> clearTokens() async {
     await _secureStorage.deleteAll();
+  }
+
+  // Lấy ID người dùng từ access token
+  Future<String?> getUserIdFromAccessToken() async {
+    String? token = await getAccessToken();
+    if (token != null && !JwtDecoder.isExpired(token)) {
+      // Giải mã token và lấy thông tin ID người dùng
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      return decodedToken['sub']; // Lấy ID người dùng từ trường 'sub'
+    }
+    return null;
   }
 }

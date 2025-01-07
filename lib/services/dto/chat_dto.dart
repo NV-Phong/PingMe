@@ -1,11 +1,9 @@
-import 'dart:convert';
-
 class ChatDTO {
   String? id; // Thêm trường id
   String? chatName;
   String? avatar;
-  ChatType chatType;
-  bool isDeleted;
+  ChatType? chatType;
+  bool? isDeleted;
   List<GroupChatMember>? groupChat;
 
   ChatDTO({
@@ -51,24 +49,24 @@ enum ChatType {
 
 class GroupChatMember {
   String userId;
-  String role;
+  String nickName; // Sửa thành nickName thay vì role
 
   GroupChatMember({
     required this.userId,
-    required this.role,
+    required this.nickName, // Sửa thành nickName
   });
 
   factory GroupChatMember.fromJson(Map<String, dynamic> json) {
     return GroupChatMember(
-      userId: json['userId'],
-      role: json['role'],
+      userId: json['UserId'], // Chỉnh sửa từ 'userId' thành 'UserId'
+      nickName: json['NickName'] ?? '', // Chỉnh sửa từ 'role' thành 'nickName'
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'userId': userId,
-      'role': role,
+      'UserId': userId, // Sửa thành 'UserId'
+      'NickName': nickName, // Sửa thành 'NickName'
     };
   }
 }
