@@ -11,6 +11,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
   final List<TextEditingController> _controllers = [
     TextEditingController(),
     TextEditingController(),
@@ -39,32 +40,144 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final labels = ['Username', 'Password'];
-
     return Scaffold(
-      appBar: AppBar(title: const Text('LoginScreen')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ...List.generate(
-              2,
-              (index) => TextField(
-                controller: _controllers[index],
-                decoration: InputDecoration(labelText: labels[index]),
-                obscureText: labels[index] == 'Password',
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                children: [
+                  SizedBox(height: constraints.maxHeight * 0.1),
+                  Text(
+                    "PINGME",
+                    style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF00BF6D),
+                        ),
+                  ),
+                  SizedBox(height: constraints.maxHeight * 0.1),
+                  Text(
+                    "Sign In",
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineSmall!
+                        .copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: constraints.maxHeight * 0.05),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _controllers[0],
+                          decoration: const InputDecoration(
+                            hintText: 'Username',
+                            filled: true,
+                            fillColor: Color(0xFFF5FCF9),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 24.0,
+                              vertical: 16.0,
+                            ),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(50),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: TextFormField(
+                            controller: _controllers[1],
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                              hintText: 'Password',
+                              filled: true,
+                              fillColor: Color(0xFFF5FCF9),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 24.0,
+                                vertical: 16.0,
+                              ),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(50),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              _formKey.currentState!.save();
+                              _login();
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            elevation: 0,
+                            backgroundColor: const Color(0xFF00BF6D),
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(double.infinity, 48),
+                            shape: const StadiumBorder(),
+                          ),
+                          child: const Text("Sign in"),
+                        ),
+                        const SizedBox(height: 16.0),
+                        TextButton(
+                          onPressed: () {
+                            // Xử lý quên mật khẩu
+                          },
+                          child: Text(
+                            'Forgot Password?',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .color!
+                                      .withOpacity(0.64),
+                                ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/auth/register');
+                          },
+                          child: Text.rich(
+                            const TextSpan(
+                              text: "Don’t have an account? ",
+                              children: [
+                                TextSpan(
+                                  text: "Sign Up",
+                                  style: TextStyle(color: Color(0xFF00BF6D)),
+                                ),
+                              ],
+                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .color!
+                                      .withOpacity(0.64),
+                                ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(onPressed: _login, child: const Text('Login')),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/auth/register');
-              },
-              child: const Text('Register'),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

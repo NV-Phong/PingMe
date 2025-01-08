@@ -48,23 +48,105 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final labels = ['Username', 'Password', 'Email', 'Display Name'];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('RegisterScreen')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ...List.generate(
-              4,
-              (index) => TextField(
-                controller: _controllers[index],
-                decoration: InputDecoration(labelText: labels[index]),
-                obscureText: labels[index] == 'Password',
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                children: [
+                  SizedBox(height: constraints.maxHeight * 0.1),
+                  Text(
+                    "PingMe",
+                    style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF00BF6D),
+                        ),
+                  ),
+                  SizedBox(height: constraints.maxHeight * 0.1),
+                  Text(
+                    "Sign Up",
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineSmall!
+                        .copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: constraints.maxHeight * 0.05),
+                  Form(
+                    child: Column(
+                      children: [
+                        ...List.generate(
+                          labels.length,
+                          (index) => Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: TextField(
+                              controller: _controllers[index],
+                              obscureText: labels[index] == 'Password',
+                              decoration: InputDecoration(
+                                hintText: labels[index],
+                                filled: true,
+                                fillColor: const Color(0xFFF5FCF9),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 24.0,
+                                  vertical: 16.0,
+                                ),
+                                border: const OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(50),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16.0),
+                        ElevatedButton(
+                          onPressed: _register,
+                          style: ElevatedButton.styleFrom(
+                            elevation: 0,
+                            backgroundColor: const Color(0xFF00BF6D),
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(double.infinity, 48),
+                            shape: const StadiumBorder(),
+                          ),
+                          child: const Text("Register"),
+                        ),
+                        const SizedBox(height: 16.0),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text.rich(
+                            const TextSpan(
+                              text: "Already have an account? ",
+                              children: [
+                                TextSpan(
+                                  text: "Sign In",
+                                  style: TextStyle(color: Color(0xFF00BF6D)),
+                                ),
+                              ],
+                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .color!
+                                      .withOpacity(0.64),
+                                ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(onPressed: _register, child: const Text('Register')),
-          ],
+            );
+          },
         ),
       ),
     );

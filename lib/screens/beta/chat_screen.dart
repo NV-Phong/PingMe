@@ -61,22 +61,6 @@ class _ChatScreenState extends State<ChatScreen> {
       print('Your client ID: $clientId');
     });
 
-    // socket.on('receive-message', (data) {
-    //   if (mounted) {
-    //     setState(() {
-    //       if (data != null && data is Map<String, dynamic>) {
-    //         chatHistory.add({
-    //           'senderId': data['senderId'] ?? '',
-    //           'IDReceiver': data['IDReceiver'] ?? '',
-    //           'message': data['content'] ?? '',
-    //           'createdAt': data['createdAt'] ?? 'Unknown',
-    //         });
-    //         scrollToBottom();
-    //       }
-    //     });
-    //   }
-    // });
-
     socket.on('chat-history', (data) {
       if (mounted) {
         setState(() {
@@ -93,9 +77,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       ? DateFormat('yyyy-MM-dd HH:mm').format(
                           DateTime.parse(message['CreateAt'].toString()))
                       : 'Unknown',
-                  'isCurrentUser': isCurrentUser
-                      ? 'false'
-                      : 'true', // Đánh dấu tin nhắn của người nhận
+                  'isCurrentUser': isCurrentUser ? 'false' : 'true',
                 };
               } else {
                 return {'message': '', 'senderId': '', 'createdAt': 'Unknown'};
@@ -114,7 +96,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> joinRoom() async {
-    // var chat = await chatService.createOrFindChat(widget.userId);
     String room = widget.chat.id.toString();
     print("mã của chat: " + room);
     if (room.isNotEmpty) {
@@ -125,7 +106,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void sendMessage() {
     String text = messageController.text.trim();
-
     String room = widget.chat.id.toString();
 
     if (text.isNotEmpty && room.isNotEmpty) {
@@ -150,7 +130,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void loadChatHistory() {
-    // String room = roomController.text.trim();
     String room = widget.chat.id.toString();
     if (room.isNotEmpty) {
       setState(() {
@@ -179,7 +158,7 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: Text(widget.displayName),
         centerTitle: true,
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.green, // Đổi màu appBar thành màu xanh lá cây
       ),
       body: Column(
         children: [
@@ -189,13 +168,11 @@ class _ChatScreenState extends State<ChatScreen> {
               itemCount: chatHistory.length,
               itemBuilder: (context, index) {
                 final chat = chatHistory[index];
-                bool isCurrentUser = chat['IDReceiver'] ==
-                    widget
-                        .userId; // Kiểm tra xem tin nhắn của người nhận hiện tại hay không
+                bool isCurrentUser = chat['IDReceiver'] == widget.userId;
                 return _buildMessageBubble(
                   chat['message'] ?? '',
                   chat['createdAt'] ?? '',
-                  isCurrentUser, // Cập nhật lại logic căn lề
+                  isCurrentUser,
                 );
               },
             ),
@@ -214,7 +191,9 @@ class _ChatScreenState extends State<ChatScreen> {
         margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
         decoration: BoxDecoration(
-          color: isCurrentUser ? Colors.blue.shade100 : Colors.grey.shade200,
+          color: isCurrentUser
+              ? Colors.green.shade100
+              : Colors.green.shade50, // Màu xanh lá cây cho các tin nhắn
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -224,8 +203,9 @@ class _ChatScreenState extends State<ChatScreen> {
               isCurrentUser ? 'You' : widget.displayName,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color:
-                    isCurrentUser ? Colors.blue.shade700 : Colors.grey.shade700,
+                color: isCurrentUser
+                    ? Colors.green.shade700
+                    : Colors.green.shade900, // Màu chữ xanh lá cây
               ),
             ),
             const SizedBox(height: 4),
@@ -238,7 +218,7 @@ class _ChatScreenState extends State<ChatScreen> {
               DateFormat('HH:mm dd/MM/yyyy').format(DateTime.parse(timestamp)),
               style: TextStyle(
                 fontSize: 12,
-                color: Colors.grey.shade600,
+                color: Colors.green.shade600, // Màu giờ phút xanh lá cây
               ),
             ),
           ],
@@ -263,7 +243,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: Colors.grey.shade200,
+                fillColor: Colors.green.shade100, // Màu nền input xanh lá cây
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 10,
@@ -281,7 +261,7 @@ class _ChatScreenState extends State<ChatScreen> {
             },
             child: const Icon(Icons.send),
             mini: true,
-            backgroundColor: Colors.purple,
+            backgroundColor: Colors.green, // Màu nút gửi tin nhắn
           ),
         ],
       ),
